@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:taskati_app/widget/custom_eleveted_button.dart';
+import 'package:taskati_app/widget/custom_text_form_field.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -12,6 +13,8 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
+  TextEditingController nameController = TextEditingController();
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final ImagePicker picker = ImagePicker();
    XFile? photo;
   void pickCamera() async{
@@ -31,37 +34,61 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Visibility(
-              visible: photo == null,
-              replacement: CircleAvatar(
+        child: Form(
+          key:formKey ,
+          child: Column(
+            
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Visibility(
+                visible: photo == null,
+                replacement: CircleAvatar(
+                  radius: 100,
+                  backgroundColor: Colors.black,
+                  backgroundImage: Image.file(File(photo?.path ?? '')).image,
+                ),
+                child:  CircleAvatar(
                 radius: 100,
                 backgroundColor: Colors.black,
-                backgroundImage: Image.file(File(photo?.path ?? '')).image,
+                child: Icon(Icons.person_2, size: 100, color: Colors.deepPurple),
+              ),),
+             
+              SizedBox(height: 30),
+              CustomElevetedButton(
+                label: 'Uploading from camera',
+                onPressed: () {
+                  pickCamera();
+                },
               ),
-              child:  CircleAvatar(
-              radius: 100,
-              backgroundColor: Colors.black,
-              child: Icon(Icons.person_2, size: 100, color: Colors.deepPurple),
-            ),),
-           
-            SizedBox(height: 20),
-            CustomElevetedButton(
-              label: 'Uploading from camera',
-              onPressed: () {
-                pickCamera();
-              },
-            ),
-            SizedBox(height: 15),
-            CustomElevetedButton(
-              label: 'Uploading from gallery',
-              onPressed: () {
-                pickGallery();
-              },
-            ),
-          ],
+              SizedBox(height: 15),
+              CustomElevetedButton(
+                label: 'Uploading from gallery',
+                onPressed: () {
+                  pickGallery();
+                },
+              ),
+              SizedBox(height: 40,),
+              CustomTextFormField(
+                controller: nameController , 
+                hintlabel: 'Enter your name',
+                 labelText: 'Name',
+                 validator: (value) {
+                   if (value == null || value.trim().isEmpty) {
+                     return 'Please Enter your name';
+                   }else if( value.length < 3){
+                       return 'the length of name at least 3';
+                   }
+                   else  {
+                    return null;
+                   }
+                 },),
+                 SizedBox(height: 20,),
+                 CustomElevetedButton(label: 'login' , onPressed: () {
+                formKey.currentState!.validate();
+                
+                 },)
+            ],
+          ),
         ),
       ),
     );
