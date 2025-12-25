@@ -1,6 +1,7 @@
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:taskati_app/ui/add_task_screen.dart';
 import 'package:taskati_app/widget/custom_container_task.dart';
 
 
@@ -51,19 +52,22 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         Spacer(),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 18 , vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.deepPurple,
-            borderRadius: BorderRadius.circular(15),
+        InkWell(
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_)=> AddTaskScreen())),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 18 , vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.deepPurple,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.add, color: Colors.white, size: 18,),
+                SizedBox(width: 3,),
+                Text('Add Task' , style: TextStyle(color: Colors.white , fontSize: 16 , fontWeight: FontWeight.w700),),
+              ],
+            )
           ),
-          child: Row(
-            children: [
-              Icon(Icons.add, color: Colors.white, size: 18,),
-              SizedBox(width: 3,),
-              Text('Add Task' , style: TextStyle(color: Colors.white , fontSize: 16 , fontWeight: FontWeight.w700),),
-            ],
-          )
         )
         ],),
          SizedBox(height: 15,) ,

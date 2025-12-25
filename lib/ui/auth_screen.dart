@@ -74,7 +74,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   CustomTextFormField(
                     controller: nameController , 
                     hintlabel: 'Enter your name',
-                     labelText: 'Name',
+                    colorHintText: Colors.deepPurple,
                      validator: (value) {
                        if (value == null || value.trim().isEmpty) {
                          return 'Please Enter your name';
