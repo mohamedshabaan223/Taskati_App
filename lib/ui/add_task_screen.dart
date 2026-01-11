@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:taskati_app/model/task_model.dart';
 import 'package:taskati_app/widget/custom_eleveted_button.dart';
 import 'package:taskati_app/widget/custom_text_form_field.dart';
 
@@ -19,9 +20,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   DateTime selectedDate = DateTime.now();
   DateFormat dateFormat = DateFormat('yyyy-MM-dd');
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  TimeOfDay startTimeOfDay = TimeOfDay.now();
+  TimeOfDay startTimeOfDay =  TimeOfDay.now();
   TimeOfDay endTimeOfDay = TimeOfDay.now();
-  bool isSelected = false;
+  int activeIndex= -1;
+  List<MaterialColor> taskColor = [
+    Colors.deepPurple,
+    Colors.orange,
+    Colors.red,
+    Colors.cyan
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -80,13 +87,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 hintlabel: dateFormat.format(selectedDate),
                 colorHintText: Colors.black,
                 onTap: () async {
-                  var date = await showDatePicker(
-                    
+                  DateTime? date = await showDatePicker(
                     context: context,
                     firstDate: DateTime.now(),
                     lastDate: DateTime(2040),
                     initialDate: selectedDate,
                   );
+                  dateController.text = DateFormat(
+                    'yyyy-MM-dd',
+                  ).format(date ?? DateTime.now());
                   if (date != null) {
                     selectedDate = date;
                     setState(() {});
@@ -112,16 +121,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           controller: startTimeController,
                           suffixIcon: Icon(Icons.alarm),
                           readOnly: true,
-                          hintlabel: '09:08 PM',
-                          onTap: () async {
-                            var time = await showTimePicker(
+                          hintlabel: '00:00',
+                          onTap: () {
+                            showTimePicker(
                               context: context,
-                              initialTime: startTimeOfDay,
-                            );
-                            if (time != null) {
-                              startTimeOfDay = time;
-                              setState(() {});
-                            }
+                              initialTime: TimeOfDay.now(),
+                            ).then((value) {
+                              startTimeController.text =
+                                  value?.format(context) ??
+                                  TimeOfDay.now().format(context);
+                              startTimeOfDay = value!;
+                            });
                           },
                         ),
                       ],
@@ -144,16 +154,17 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                           controller: endTimeController,
                           suffixIcon: Icon(Icons.alarm),
                           readOnly: true,
-                          hintlabel: '09:08 PM',
-                          onTap: () async {
-                            var time = await showTimePicker(
+                          hintlabel: '00:00 ',
+                          onTap: () {
+                            showTimePicker(
                               context: context,
-                              initialTime: endTimeOfDay,
-                            );
-                            if (time != null) {
-                              endTimeOfDay = time;
-                              setState(() {});
-                            }
+                              initialTime: TimeOfDay.now(),
+                            ).then((value) {
+                              endTimeController.text =
+                                  value?.format(context) ??
+                                  TimeOfDay.now().format(context);
+                              endTimeOfDay = value!;
+                            });
                           },
                         ),
                       ],
@@ -169,33 +180,54 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               SizedBox(height: 10),
               Row(
                 children: List.generate(
-                  3,
+                  taskColor.length,
                   (index) => Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 3),
-                    child: Stack(
-                      alignment: AlignmentDirectional.center,
-                      children: [
-                         CircleAvatar(
-                                                 radius: 25,
-                                                 backgroundColor: index == 0
-                            ?  Colors.deepPurple
-                            : index == 1
-                            ? Colors.orange
-                            : Colors.red,
-                                               ),
-                         
-                    Icon(Icons.done, color: index == 0 ?Colors.white : Colors.transparent , size: 30,)
-                      ],
-                    )
+                    child: InkWell(
+                      onTap: () {
+                        activeIndex = index;
+                        setState(() {
+                          
+                        });
+                      },
+                      child: CircleAvatar(
+                        radius: 25,
+                        backgroundColor: taskColor[index],
+                        
+                          child: activeIndex == index ? Icon(Icons.done_all_rounded , color: Colors.white,):null),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              
 
               SizedBox(height: 100),
               CustomElevetedButton(
                 label: 'Create Task',
                 onPressed: () {
-                  formKey.currentState?.validate();
+                 if ( formKey.currentState?.validate()??false) {
+                  if (activeIndex == -1) {
+                    showDialog(context: context, builder: (context)=>
+                    AlertDialog(
+                      title: Text('Error!'),
+                      content: Text('Please Choose Task Color'),
+                      actions: [
+                        CustomElevetedButton(label: 'ok', onPressed: () {
+                          Navigator.pop(context);
+                        },)
+                      ],
+                    ));
+
+                  }
+                   tasks.add(TaskModel(
+                    taskTitle: titleController.text,
+                     descraption: descraptionController.text, 
+                     date: dateController.text,
+                      startTime: startTimeController.text,
+                       endTime: endTimeController.text,
+                        color: taskColor[activeIndex]));
+                        Navigator.pop(context);
+                 }
                 },
               ),
             ],

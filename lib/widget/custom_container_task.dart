@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:taskati_app/model/task_model.dart';
 import 'package:taskati_app/ui/home_screen.dart';
 
 class CustomContainerTask extends StatelessWidget {
-  const CustomContainerTask({super.key , required this.task});
- final Task task;
+  const CustomContainerTask({super.key , required this.taskModel});
+ final TaskModel taskModel;
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +12,7 @@ class CustomContainerTask extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 15 , horizontal: 10),
       width: double.infinity,
       decoration: BoxDecoration(
-      color: task.color,
+      color: taskModel.color,
       borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -21,7 +22,7 @@ class CustomContainerTask extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 7,
             children: [
-              Text(task.taskName , style: TextStyle(
+              Text(taskModel.taskTitle , style: TextStyle(
                 fontSize: 18,
                 color: Colors.white,
                 fontWeight: FontWeight.w700
@@ -29,9 +30,9 @@ class CustomContainerTask extends StatelessWidget {
               Row(children: [
                 Icon(Icons.alarm , color: Colors.white,), 
                 SizedBox(width: 5,),
-                Text('02:25-02:40 AM' , style: TextStyle(color: Colors.white),)
+                Text('${taskModel.startTime}-${taskModel.endTime}' , style: TextStyle(color: Colors.white),)
               ],),
-              Text('I will do This Task' , style: TextStyle(
+              Text(taskModel.descraption , style: TextStyle(
                 fontSize: 16 , 
                 color: Colors.white,
                 fontWeight: FontWeight.w600
