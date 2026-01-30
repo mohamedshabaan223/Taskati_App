@@ -12,7 +12,7 @@ class CustomContainerTask extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: 15 , horizontal: 10),
       width: double.infinity,
       decoration: BoxDecoration(
-      color: taskModel.color,
+      color:Color(taskModel.color),
       borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

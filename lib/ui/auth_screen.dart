@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:taskati_app/common/const_strings.dart';
+import 'package:taskati_app/model/user_model.dart';
 import 'package:taskati_app/ui/home_screen.dart';
 import 'package:taskati_app/widget/custom_eleveted_button.dart';
 import 'package:taskati_app/widget/custom_text_form_field.dart';
@@ -86,11 +89,39 @@ class _AuthScreenState extends State<AuthScreen> {
                        }
                      },),
                      SizedBox(height: 20,),
-                     CustomElevetedButton(label: 'login' , onPressed: () {
+                     CustomElevetedButton(label: 'login' , onPressed: () async {
                     if(formKey.currentState!.validate()){
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>HomeScreen(name: nameController.text,),),);
+                      if(photo == null){
+                       return showDialog(context: context, builder: ((context)=>AlertDialog(
+                          title: Text('Error' , 
+                         
+                          style: TextStyle(color: Colors.red , fontSize: 24, fontWeight: FontWeight.w500),),
+                          content: Text('Photo is requierd !' ,style: TextStyle(color: Colors.black , fontSize: 18, fontWeight: FontWeight.w700)),
+                          actions: [
+                            Center(
+                              child: TextButton(onPressed: (){
+                                
+                                Navigator.pop(context);
+                              }, style: TextButton.styleFrom(
+                                backgroundColor: Colors.deepPurple,
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadiusGeometry.circular(15))
+                              ),
+                              child: Text('ok' , style: TextStyle(color: Colors.white),)),
+                            ),
+                          ],
+                        )));
+                        
+                      }
+                        var box = Hive.box<UserModel>(ConstStrings.userBox);
+                    await box.clear();
+                    box.add(UserModel(name: nameController.text, imagePath: photo?.path ??'')).then((value){
+
+                    }); Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_)=>HomeScreen(),),).catchError((e){
+                      return 'Error$e';
+                    });
                     }
                     
+                  
                      },)
                 ],
               ),

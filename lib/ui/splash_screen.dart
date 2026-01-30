@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:lottie/lottie.dart';
+import 'package:taskati_app/common/const_strings.dart';
+import 'package:taskati_app/model/user_model.dart';
 import 'package:taskati_app/ui/auth_screen.dart';
+import 'package:taskati_app/ui/home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -42,9 +46,15 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void nextScreen() {
     Future.delayed(Duration(seconds: 3), () {
-      Navigator.of(
+     if(Hive.box<UserModel>(ConstStrings.userBox).isEmpty){
+       Navigator.of(
         context,
       ).pushReplacement(MaterialPageRoute(builder: (context) => AuthScreen()));
+     }else{
+       Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
+     }
     });
   }
 }
