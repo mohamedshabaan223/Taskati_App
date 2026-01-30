@@ -1,15 +1,21 @@
+import 'dart:io';
+
 import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:taskati_app/common/const_strings.dart';
 import 'package:taskati_app/model/task_model.dart';
+import 'package:taskati_app/model/user_model.dart';
 import 'package:taskati_app/ui/add_task_screen.dart';
+import 'package:taskati_app/ui/auth_screen.dart';
 import 'package:taskati_app/widget/custom_container_task.dart';
 
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key , required this.name});
-  final String name;
+  const HomeScreen({super.key ,});
+  
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -18,7 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   DateTime selectedDate = DateTime.now();
   DateFormat dateFormat = DateFormat('MMMM d , y');
-
+  UserModel? user = Hive.box<UserModel>(ConstStrings.userBox).getAt(0);
  
   @override
   Widget build(BuildContext context) {
@@ -35,11 +41,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                  Text('Hello,${widget.name}' , style: TextStyle(fontSize: 20 , color: Colors.deepPurple, fontWeight: FontWeight.w700), maxLines: 1,overflow: TextOverflow.ellipsis,),
+                  Text('Hello,${user?.name ?? ''}' , style: TextStyle(fontSize: 20 , color: Colors.deepPurple, fontWeight: FontWeight.w700), maxLines: 1,overflow: TextOverflow.ellipsis,),
                   Text('Have A Nice Day.' , style: TextStyle(fontSize: 18 , fontWeight: FontWeight.w600),)
                 ],),
               ),
-              CircleAvatar(radius: 30, backgroundColor: Colors.black,child: Icon(Icons.person, size: 30, color: Colors.deepPurple,),)
+              CircleAvatar(radius: 30,backgroundImage: Image.file(File(user?.imagePath ?? '')).image),
+              IconButton(onPressed: (){
+                Hive.box<UserModel>(ConstStrings.userBox).clear();
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (_)=>AuthScreen()));
+              }, icon: Icon(Icons.logout_outlined , color: Colors.red,)),
             ],
           ),
           SizedBox(height: 15,) ,
