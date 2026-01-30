@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:taskati_app/common/const_strings.dart';
 import 'package:taskati_app/model/task_model.dart';
 import 'package:taskati_app/widget/custom_eleveted_button.dart';
 import 'package:taskati_app/widget/custom_text_form_field.dart';
@@ -219,14 +221,15 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     ));
 
                   }
-                   tasks.add(TaskModel(
+                  Hive.box<TaskModel>(ConstStrings.tasksBox).add(TaskModel(
                     taskTitle: titleController.text,
                      descraption: descraptionController.text, 
                      date: dateController.text,
                       startTime: startTimeController.text,
                        endTime: endTimeController.text,
-                        color: taskColor[activeIndex]));
-                        Navigator.pop(context);
+                        color: taskColor[activeIndex].toARGB32())).then((value){
+                          Navigator.pop(context);
+                        });
                  }
                 },
               ),
