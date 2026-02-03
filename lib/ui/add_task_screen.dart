@@ -22,18 +22,19 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   DateTime selectedDate = DateTime.now();
   DateFormat dateFormat = DateFormat('yyyy-MM-dd');
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  TimeOfDay startTimeOfDay =  TimeOfDay.now();
-  TimeOfDay endTimeOfDay = TimeOfDay.now();
-  int activeIndex= -1;
+  TimeOfDay? startTimeOfDay;
+  TimeOfDay? endTimeOfDay;
+  int activeIndex = -1;
   List<MaterialColor> taskColor = [
     Colors.deepPurple,
     Colors.orange,
     Colors.red,
-    Colors.cyan
+    Colors.cyan,
   ];
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.deepPurple),
@@ -58,30 +59,31 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 'Title',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: size.height * 0.012),
+
               CustomTextFormField(
                 controller: titleController,
                 hintlabel: 'Enter Title',
                 colorHintText: Colors.black,
               ),
-              SizedBox(height: 10),
+              SizedBox(height: size.height * 0.012),
               Text(
                 'Descraption',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: size.height * 0.012),
               CustomTextFormField(
                 controller: descraptionController,
                 maxLines: 3,
                 hintlabel: 'Enter Descraption',
                 colorHintText: Colors.black,
               ),
-              SizedBox(height: 10),
+              SizedBox(height: size.height * 0.012),
               Text(
                 'Date',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: size.height * 0.012),
               CustomTextFormField(
                 controller: dateController,
                 readOnly: true,
@@ -104,7 +106,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   }
                 },
               ),
-              SizedBox(height: 10),
+              SizedBox(height: size.height * 0.012),
               Row(
                 children: [
                   Expanded(
@@ -118,7 +120,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: size.height * 0.012),
                         CustomTextFormField(
                           controller: startTimeController,
                           suffixIcon: Icon(Icons.alarm),
@@ -132,14 +134,14 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                               startTimeController.text =
                                   value?.format(context) ??
                                   TimeOfDay.now().format(context);
-                              startTimeOfDay = value!;
+                              startTimeOfDay = value;
                             });
                           },
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(width: 10),
+                  SizedBox(width: size.width * 0.022),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,10 +153,18 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: size.height * 0.012),
                         CustomTextFormField(
                           controller: endTimeController,
                           suffixIcon: Icon(Icons.alarm),
+                          validator: (value) {
+                            if (startTimeOfDay != null) {
+                              if (endTimeOfDay?.isBefore(startTimeOfDay!) ??
+                                  false) {
+                                return 'EndTime cannot be before startTime';
+                              }
+                            }
+                          },
                           readOnly: true,
                           hintlabel: '00:00 ',
                           onTap: () {
@@ -165,7 +175,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                               endTimeController.text =
                                   value?.format(context) ??
                                   TimeOfDay.now().format(context);
-                              endTimeOfDay = value!;
+                              endTimeOfDay = value;
                             });
                           },
                         ),
@@ -174,12 +184,12 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 15),
+              SizedBox(height: size.height * 0.018),
               Text(
                 'Color',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: size.height * 0.012),
               Row(
                 children: List.generate(
                   taskColor.length,
@@ -188,49 +198,59 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                     child: InkWell(
                       onTap: () {
                         activeIndex = index;
-                        setState(() {
-                          
-                        });
+                        setState(() {});
                       },
                       child: CircleAvatar(
                         radius: 25,
                         backgroundColor: taskColor[index],
-                        
-                          child: activeIndex == index ? Icon(Icons.done_all_rounded , color: Colors.white,):null),
+
+                        child: activeIndex == index
+                            ? Icon(Icons.done_all_rounded, color: Colors.white)
+                            : null,
                       ),
                     ),
                   ),
                 ),
-              
+              ),
 
-              SizedBox(height: 100),
+              SizedBox(height: size.height * 0.1),
               CustomElevetedButton(
                 label: 'Create Task',
                 onPressed: () {
-                 if ( formKey.currentState?.validate()??false) {
-                  if (activeIndex == -1) {
-                    showDialog(context: context, builder: (context)=>
-                    AlertDialog(
-                      title: Text('Error!'),
-                      content: Text('Please Choose Task Color'),
-                      actions: [
-                        CustomElevetedButton(label: 'ok', onPressed: () {
-                          Navigator.pop(context);
-                        },)
-                      ],
-                    ));
-
-                  }
-                  Hive.box<TaskModel>(ConstStrings.tasksBox).add(TaskModel(
-                    taskTitle: titleController.text,
-                     descraption: descraptionController.text, 
-                     date: dateController.text,
-                      startTime: startTimeController.text,
-                       endTime: endTimeController.text,
-                        color: taskColor[activeIndex].toARGB32())).then((value){
+                  if (formKey.currentState?.validate() ?? false) {
+                    if (activeIndex == -1) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text('Error!'),
+                          content: Text('Please Choose Task Color'),
+                          actions: [
+                            CustomElevetedButton(
+                              label: 'ok',
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    Hive.box<TaskModel>(ConstStrings.tasksBox)
+                        .add(
+                          TaskModel(
+                            taskTitle: titleController.text,
+                            descraption: descraptionController.text,
+                            date: dateController.text,
+                            startTime: startTimeController.text,
+                            endTime: endTimeController.text,
+                            status: 'TODO',
+                            color: taskColor[activeIndex].toARGB32(),
+                          ),
+                        )
+                        .then((value) {
                           Navigator.pop(context);
                         });
-                 }
+                  }
                 },
               ),
             ],

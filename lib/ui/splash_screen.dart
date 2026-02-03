@@ -46,15 +46,18 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void nextScreen() {
     Future.delayed(Duration(seconds: 3), () {
-     if(Hive.box<UserModel>(ConstStrings.userBox).isEmpty){
-       Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (context) => AuthScreen()));
-     }else{
-       Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
-     }
+      var box = Hive.box<UserModel>(ConstStrings.userBox);
+      if (box.isEmpty) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => AuthScreen()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomeScreen()),
+        );
+      }
     });
   }
 }
