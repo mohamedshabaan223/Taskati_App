@@ -15,6 +15,8 @@ class TaskModel extends HiveObject {
   String endTime;
   @HiveField(5)
   int color;
+   @HiveField(6)
+  String status;
   TaskModel({
     required this.taskTitle,
     required this.descraption,
@@ -22,6 +24,7 @@ class TaskModel extends HiveObject {
     required this.startTime,
     required this.endTime,
     required this.color,
+    required this.status,
   });
   
 }
