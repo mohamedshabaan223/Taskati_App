@@ -5,10 +5,13 @@ import 'package:hive/hive.dart';
 import 'package:taskati_app/common/const_strings.dart';
 import 'package:taskati_app/model/user_model.dart';
 import 'package:taskati_app/ui/auth_screen.dart';
+import 'package:taskati_app/ui/update_screen.dart';
 
 class CustomAppbar extends StatelessWidget {
   CustomAppbar({super.key});
+
   UserModel? user = Hive.box<UserModel>(ConstStrings.userBox).getAt(0);
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -19,6 +22,7 @@ class CustomAppbar extends StatelessWidget {
             children: [
               Text(
                 'Hello,${user?.name ?? ''}',
+                
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.deepPurple,
@@ -34,9 +38,34 @@ class CustomAppbar extends StatelessWidget {
             ],
           ),
         ),
-        CircleAvatar(
-          radius: 30,
-          backgroundImage: Image.file(File(user?.imagePath ?? '')).image,
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            CircleAvatar(
+            radius: 30,
+            backgroundImage: Image.file(File(user?.imagePath ?? '')).image,
+          ),
+          Positioned
+
+          (
+            
+            left: 35,
+            top: 37,
+            child: InkWell(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (_)=>UpdateScreen()));
+              },
+              child: Container(
+                padding: EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(100),
+                color: Colors.deepPurple,
+              
+              ),
+              child: Icon(Icons.edit, color: Colors.white, size: 20,),
+                        ),
+            ))
+          ],
         ),
         IconButton(
           onPressed: () {

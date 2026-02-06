@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class CustomBotton extends StatelessWidget {
-  const CustomBotton({
+   CustomBotton({
     super.key,
     required this.onTap,
     required this.label,
-    required this.icon,
+     this.icon,
     required this.color,
   });
   final void Function()? onTap;
   final String label;
-  final IconData icon;
+   IconData? icon;
   final Color color;
   @override
   Widget build(BuildContext context) {
