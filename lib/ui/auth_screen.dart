@@ -175,4 +175,9 @@ class _AuthScreenState extends State<AuthScreen> {
       ),
     );
   }
+  var box = Hive.box<UserModel>(ConstStrings.userBox);
+  void updateName(){
+    UserModel? user = box.getAt(0);
+    
+  }
 }
